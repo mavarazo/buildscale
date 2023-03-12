@@ -1,0 +1,16 @@
+spring.profiles.active: local
+
+server:
+  port: 8002
+
+spring:
+  jpa:
+    open-in-view: false
+  liquibase:
+    enabled: true
+    change-log: /db/changelog/master.xml
+
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    com.mav.buildscale: debug

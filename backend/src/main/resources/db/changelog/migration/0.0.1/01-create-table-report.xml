@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
+
+    <changeSet author="mav" id="0.0.1-01-1-create-table-report">
+        <createTable tableName="BS_REPORT">
+            <column name="OID" type="VARCHAR2(36)">
+                <constraints primaryKey="true" primaryKeyName="PK_BS_REPORT"/>
+            </column>
+
+            <column name="CREATED" type="TIMESTAMP(6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="HOSTNAME" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="PROJECT" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DURATION" type="BIGINT" remarks="in millis">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
+
+    <changeSet author="mav" id="0.0.1-03-1-create-table-tag">
+        <createTable tableName="BS_TAG">
+            <column name="OID" type="VARCHAR2(36)">
+                <constraints primaryKey="true" primaryKeyName="PK_BS_TAG"/>
+            </column>
+
+            <column name="REPORT_OID" type="VARCHAR2(36)">
+                <constraints nullable="false" foreignKeyName="FK_REPORT_TAG" references="BS_REPORT"/>
+            </column>
+
+            <column name="K" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="V" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
