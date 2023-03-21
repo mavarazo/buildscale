@@ -1,25 +1,30 @@
 package com.mav.buildscale.plugin.internal;
 
+import com.mav.buildscale.plugin.internal.model.Report;
+import com.mav.buildscale.plugin.internal.model.Tag;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * collect info about the build system
  */
-public abstract class BuildInfoService implements BuildService<BuildInfoService.Params> {
+public abstract class BuildInfoService extends AbstractBuildService implements BuildService<BuildInfoService.Params> {
 
 
     public interface Params extends BuildServiceParameters {
-        Property<String> getProjectName();
+
         Property<String> getGradleVersion();
+
+        Property<Provider<BuildPublishService>> getBuildPublishServiceProvider();
     }
 
     private static final List<String> BASIC_SYSTEM_PROPERTIES = new ArrayList<>(List.of(
@@ -33,16 +38,13 @@ public abstract class BuildInfoService implements BuildService<BuildInfoService.
             "java.version"
     ));
 
-    public Optional<String> getProjectName() {
-        return Optional.ofNullable(getParameters().getProjectName().getOrNull());
-    }
-
-    public Optional<String> getHostname() {
-        try {
-            return Optional.ofNullable(InetAddress.getLocalHost().getHostName());
-        } catch (final Exception ex) {
-            return Optional.empty();
-        }
+    @Override
+    public void close() {
+        final Report report = getParameters().getBuildPublishServiceProvider().get().get().getReport();
+        Stream.of(collectBasicInfo(), collectJavaInfo(), collectGradleInfo())
+                .flatMap(m -> m.entrySet().stream())
+                .map(e -> Tag.of(e.getKey(), e.getValue()))
+                .forEach(report::addTag);
     }
 
     public Map<String, String> collectBasicInfo() {

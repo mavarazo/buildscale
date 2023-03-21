@@ -1,15 +1,14 @@
 package com.mav.buildscale.plugin.internal.model;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
+import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,28 +16,38 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class Report {
+public class Report implements Serializable {
 
     private String project;
     private String hostname;
     private long durationInMillis;
     private final List<Task> tasks = new ArrayList<>();
     private final List<Tag> tags = new ArrayList<>();
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    @JsonIgnore
-    private final long startTime = System.currentTimeMillis();
+    private final List<Test> tests = new ArrayList<>();
 
     public void addTask(final Task task) {
         tasks.add(task);
-        calculateDurationInMillis();
     }
 
     public void addTag(final Tag tag) {
         tags.add(tag);
     }
 
-    private void calculateDurationInMillis() {
-        durationInMillis = System.currentTimeMillis() - startTime;
+    public void addTest(final Test test) {
+        tests.add(test);
+    }
+
+    public long getDurationInMillis() {
+        return tasks.stream()
+                .mapToLong(Task::getDurationInMillis)
+                .sum();
+    }
+
+    public String getHostname() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (final Exception ex) {
+            return null;
+        }
     }
 }

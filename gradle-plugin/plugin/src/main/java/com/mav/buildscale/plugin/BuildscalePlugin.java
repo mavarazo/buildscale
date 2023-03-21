@@ -6,6 +6,8 @@ package com.mav.buildscale.plugin;
 import com.mav.buildscale.plugin.internal.BuildInfoService;
 import com.mav.buildscale.plugin.internal.BuildPublishService;
 import com.mav.buildscale.plugin.internal.BuildReportService;
+import com.mav.buildscale.plugin.internal.TestReportService;
+import com.mav.buildscale.plugin.internal.model.Report;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.invocation.Gradle;
@@ -27,35 +29,39 @@ public class BuildscalePlugin implements Plugin<Project> {
     public void apply(final Project project) {
         final BuildscaleExtension extension = project.getExtensions().create("buildscale", BuildscaleExtension.class, project.getObjects());
 
-        final Provider<BuildInfoService> buildInfoServiceProvider = registerBuildInfoService(project.getGradle(), project.getName());
-        final Provider<BuildReportService> buildReportServiceProvider = registerBuildReportService(project.getGradle());
-        registerBuildPublisherService(project.getGradle(), extension, buildInfoServiceProvider, buildReportServiceProvider);
+        final Report report = Report.builder()
+                .project(project.getName())
+                .build();
+
+        final Provider<BuildPublishService> buildPublishServiceProvider = registerBuildPublisherService(project.getGradle(), extension, report);
+
+        project.getGradle().addListener(new TestReportService(buildPublishServiceProvider));
+        registerBuildInfoService(project.getGradle(), buildPublishServiceProvider);
+        registerBuildReportService(project.getGradle(), buildPublishServiceProvider);
     }
 
-    private Provider<BuildInfoService> registerBuildInfoService(final Gradle gradle, final String projectName) {
+    private void registerBuildInfoService(final Gradle gradle, final Provider<BuildPublishService> buildPublishServiceProvider) {
         final Provider<BuildInfoService> buildInfoServiceProvider = gradle.getSharedServices().registerIfAbsent("build-info-service", BuildInfoService.class, service -> {
-            service.getParameters().getProjectName().set(projectName);
             service.getParameters().getGradleVersion().set(gradle.getGradleVersion());
+            service.getParameters().getBuildPublishServiceProvider().set(buildPublishServiceProvider);
         });
-        return buildInfoServiceProvider;
+        registry.onTaskCompletion(buildInfoServiceProvider);
     }
 
-    private Provider<BuildReportService> registerBuildReportService(final Gradle gradle) {
-        final Provider<BuildReportService> buildReportServiceProvider = gradle.getSharedServices().registerIfAbsent("build-report-service", BuildReportService.class, service -> {
-        });
+    private void registerBuildReportService(final Gradle gradle, final Provider<BuildPublishService> buildPublishServiceProvider) {
+        final Provider<BuildReportService> buildReportServiceProvider = gradle.getSharedServices().registerIfAbsent("build-report-service", BuildReportService.class, service ->
+                service.getParameters().getBuildPublishServiceProvider().set(buildPublishServiceProvider));
         registry.onTaskCompletion(buildReportServiceProvider);
-        return buildReportServiceProvider;
     }
 
-    private void registerBuildPublisherService(final Gradle gradle, final BuildscaleExtension extension, final Provider<BuildInfoService> buildInfoServiceProvider, final Provider<BuildReportService> buildReportServiceProvider) {
+    private Provider<BuildPublishService> registerBuildPublisherService(final Gradle gradle, final BuildscaleExtension extension, final Report report) {
         final Provider<BuildPublishService> buildPublishService = gradle.getSharedServices().registerIfAbsent("build-publish-service", BuildPublishService.class, service -> {
             service.getParameters().getPublishEnabled().set(extension.getPublishEnabled());
             service.getParameters().getUrl().set(extension.getUri());
             service.getParameters().getVerboseEnabled().set(extension.getVerboseEnabled());
-            service.getParameters().getBuildInfoServiceProvider().set(buildInfoServiceProvider);
-            service.getParameters().getBuildReportServiceProvider().set(buildReportServiceProvider);
+            service.getParameters().getReport().set(report);
         });
         registry.onTaskCompletion(buildPublishService);
+        return buildPublishService;
     }
-
 }

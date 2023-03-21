@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.tooling.events.OperationResult;
 import org.gradle.tooling.events.task.TaskFailureResult;
 import org.gradle.tooling.events.task.TaskSkippedResult;
@@ -21,6 +23,8 @@ import static java.util.Objects.nonNull;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Task {
+
+    private static final Logger LOGGER = Logging.getLogger(Task.class);
 
     private String path;
     private long startTime;
@@ -85,8 +89,8 @@ public class Task {
                 .endTime(failureResult.getEndTime())
                 .status(TaskStatus.FAILED)
                 .build();
-        if (nonNull(failureResult.getExecutionReasons())) {
-            failureResult.getExecutionReasons().forEach(task::addMessage);
+        if (nonNull(failureResult.getFailures())) {
+            failureResult.getFailures().forEach(failure -> task.addMessage(failure.getMessage()));
         }
         return task;
     }
