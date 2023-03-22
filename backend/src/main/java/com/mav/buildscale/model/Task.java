@@ -13,9 +13,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "BS_TASK")
+@Table(name = "BES_TASK")
 public class Task extends AbstractEntity {
 
+    @ManyToOne
+    @JoinColumn(name = "REPORT_OID")
+    private Report report;
+    
     @Column(name = "PATH")
     private String path;
 
@@ -27,10 +31,6 @@ public class Task extends AbstractEntity {
 
     @Column(name = "DURATION")
     private Long durationInMillis;
-
-    @ManyToOne
-    @JoinColumn(name = "REPORT_OID")
-    private Report report;
 
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)

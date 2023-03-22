@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.16.xsd">
+
+    <changeSet author="mav" id="0.0.1-04-1-create-table-test">
+        <createTable tableName="BES_TEST">
+            <column name="OID" type="VARCHAR2(36)">
+                <constraints primaryKey="true" primaryKeyName="PK_BES_TEST"/>
+            </column>
+
+            <column name="REPORT_OID" type="VARCHAR2(36)">
+                <constraints nullable="false" foreignKeyName="FK_REPORT_TEST" references="BES_REPORT"/>
+            </column>
+
+            <column name="NAME" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CLASS_NAME" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DURATION" type="BIGINT" remarks="in millis">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STATUS" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet author="mav" id="0.0.1-04-2-create-table-test-failure">
+        <createTable tableName="BES_TEST_FAILURE">
+            <column name="OID" type="VARCHAR2(36)">
+                <constraints primaryKey="true" primaryKeyName="PK_BES_TEST_FAILURE"/>
+            </column>
+
+            <column name="TEST_OID" type="VARCHAR2(36)">
+                <constraints nullable="false" foreignKeyName="FK_TEST_TEST_FAILURE" references="BES_TEST"/>
+            </column>
+
+            <column name="MESSAGE" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="STACKTRACE" type="CLOB"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

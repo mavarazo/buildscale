@@ -1,11 +1,15 @@
 package com.mav.buildscale.mapper;
 
-import com.mav.buildscale.model.CreateReport;
-import com.mav.buildscale.model.CreateTag;
-import com.mav.buildscale.model.CreateTask;
+import com.mav.buildscale.api.model.ReportDto;
+import com.mav.buildscale.api.model.TagDto;
+import com.mav.buildscale.api.model.TaskDto;
+import com.mav.buildscale.api.model.TestDto;
+import com.mav.buildscale.api.model.TestFailureDto;
 import com.mav.buildscale.model.Report;
 import com.mav.buildscale.model.Tag;
 import com.mav.buildscale.model.Task;
+import com.mav.buildscale.model.Test;
+import com.mav.buildscale.model.TestFailure;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,22 +22,41 @@ public interface ReportMapper {
 
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "tags", ignore = true)
-    Report createReportToReport(final CreateReport report);
+    @Mapping(target = "tests", ignore = true)
+    Report mapReportDtoToReportDo(final ReportDto reportDto);
 
     @AfterMapping
-    default void afterMapping(@MappingTarget final Report report, final CreateReport createReport) {
-        createReport.getTasks().stream()
-                .map(this::createTaskToTask)
+    default void afterMapping(@MappingTarget final Report report, final ReportDto reportDto) {
+        reportDto.getTags().stream()
+                .map(this::mapTagDtoToTag)
+                .forEach(report::addTag);
+
+        reportDto.getTasks().stream()
+                .map(this::mapTaskDtoToTask)
                 .forEach(report::addTask);
 
-        createReport.getTags().stream()
-                .map(this::createTagToTag)
-                .forEach(report::addTag);
+        reportDto.getTests().stream()
+                .map(this::mapTestDtoToTest)
+                .forEach(report::addTest);
     }
 
     @Mapping(target = "report", ignore = true)
-    Task createTaskToTask(final CreateTask task);
+    Tag mapTagDtoToTag(final TagDto tagDto);
 
     @Mapping(target = "report", ignore = true)
-    Tag createTagToTag(final CreateTag tag);
+    Task mapTaskDtoToTask(final TaskDto taskDto);
+
+    @Mapping(target = "report", ignore = true)
+    @Mapping(target = "testFailures", ignore = true)
+    Test mapTestDtoToTest(final TestDto testDto);
+
+    @AfterMapping
+    default void afterMapping(@MappingTarget final Test test, final TestDto testDto) {
+        testDto.getFailures().stream()
+                .map(this::mapTestFailureDtoToTestFailure)
+                .forEach(test::addTestFailure);
+    }
+
+    @Mapping(target = "test", ignore = true)
+    TestFailure mapTestFailureDtoToTestFailure(final TestFailureDto testFailureDto);
 }

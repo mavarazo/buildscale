@@ -1,0 +1,215 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Buildscale API
+
+paths:
+  /reports:
+    get:
+      summary: List all reports
+      operationId: getReports
+      tags:
+        - Reports
+      responses:
+        '200':
+          description: An array of reports
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ReportDto"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+    post:
+      summary: Add a report
+      operationId: addReport
+      tags:
+        - Reports
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportDto'
+      responses:
+        '201':
+          description: Report created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    $ref: '#/components/schemas/ReportId'
+          links:
+            GetReportById:
+              operationId: getReportById
+              parameters:
+                userId: '$response.body#/id'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+  /reports/{reportId}:
+    get:
+      summary: Info for a specific report
+      operationId: getReportById
+      tags:
+        - Reports
+      parameters:
+        - $ref: '#/components/parameters/ReportIdParam'
+      responses:
+        '200':
+          description: A specific report
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReportDto"
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorDto"
+components:
+  parameters:
+    ReportIdParam:
+      name: reportId
+      in: path
+      required: true
+      description: The id of the report to retrieve
+      schema:
+        $ref: '#/components/schemas/ReportId'
+
+  schemas:
+    ReportId:
+      description: Id of a report
+      type: string
+
+    ReportDto:
+      type: object
+      required:
+        - project
+        - hostname
+        - durationInMillis
+        - tags
+        - tasks
+        - tests
+      properties:
+        id:
+          $ref: '#/components/schemas/ReportId'
+        created:
+          type: string
+          format: datetime
+        project:
+          type: string
+        hostname:
+          type: string
+        durationInMillis:
+          type: number
+          format: double
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagDto'
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskDto'
+        tests:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestDto'
+
+    TagDto:
+      type: object
+      required:
+        - key
+        - value
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+
+    TaskDto:
+      type: object
+      required:
+        - path
+        - durationInMillis
+        - status
+      properties:
+        path:
+          type: string
+        startTime:
+          type: number
+          format: double
+        endTime:
+          type: number
+          format: double
+        durationInMillis:
+          type: number
+          format: double
+        status:
+          type: string
+          enum:
+            - EXECUTED
+            - UP_TO_DATE
+            - FROM_CACHE
+            - SKIPPED
+            - FAILED
+
+    TestDto:
+      type: object
+      required:
+        - name
+        - className
+        - durationInMillis
+        - failures
+      properties:
+        name:
+          type: string
+        className:
+          type: string
+        durationInMillis:
+          type: number
+          format: double
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILED
+            - SKIPPED
+        failures:
+          type: array
+          items:
+            $ref: '#/components/schemas/TestFailureDto'
+
+    TestFailureDto:
+      type: object
+      required:
+        - message
+        - stacktrace
+      properties:
+        message:
+          type: string
+        stacktrace:
+          type: string
+
+    ErrorDto:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string

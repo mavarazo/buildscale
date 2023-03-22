@@ -18,9 +18,13 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
-@Table(name = "BS_REPORT")
+@Table(name = "BES_REPORT")
 @EntityListeners(AuditingEntityListener.class)
 public class Report extends AbstractEntity {
+
+    @CreatedDate
+    @Column(name = "CREATED")
+    private LocalDateTime created;
 
     @Column(name = "PROJECT")
     private String project;
@@ -30,24 +34,28 @@ public class Report extends AbstractEntity {
 
     @Column(name = "DURATION")
     private Long durationInMillis;
-
-    @CreatedDate
-    @Column(name = "CREATED")
-    private LocalDateTime created;
+    
+    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Tag> tags = new ArrayList<>();
 
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Tag> tags = new ArrayList<>();
+    private List<Test> tests = new ArrayList<>();
+
+    public void addTag(final Tag tag) {
+        tag.setReport(this);
+        tags.add(tag);
+    }
 
     public void addTask(final Task task) {
         task.setReport(this);
         tasks.add(task);
     }
 
-    public void addTag(final Tag tag) {
-        tag.setReport(this);
-        tags.add(tag);
+    public void addTest(final Test test) {
+        test.setReport(this);
+        tests.add(test);
     }
 }

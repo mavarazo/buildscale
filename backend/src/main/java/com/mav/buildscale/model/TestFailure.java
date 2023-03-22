@@ -11,16 +11,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "BES_TAG")
-public class Tag extends AbstractEntity {
+@Table(name = "BES_TEST_FAILURE")
+public class TestFailure extends AbstractEntity {
 
     @ManyToOne
-    @JoinColumn(name = "REPORT_OID")
-    private Report report;
+    @JoinColumn(name = "TEST_OID")
+    private Test test;
 
-    @Column(name = "KEY_VAL")
-    private String key;
+    @Column(name = "MESSAGE")
+    private String message;
 
-    @Column(name = "VALUE_VAL")
-    private String value;
+    @Column(name = "STACKTRACE")
+    private String stacktrace;
 }
