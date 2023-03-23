@@ -10,6 +10,10 @@ paths:
       operationId: getReports
       tags:
         - Reports
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/SizeParam'
+        - $ref: '#/components/parameters/SortParam'
       responses:
         '200':
           description: An array of reports
@@ -79,6 +83,33 @@ paths:
                 $ref: "#/components/schemas/ErrorDto"
 components:
   parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Zero-based page index
+      schema:
+        type: integer
+        format: int32
+        default: 0
+
+    SizeParam:
+      name: size
+      in: query
+      description: The size of the page to be returned
+      schema:
+        type: integer
+        format: int32
+        default: 50
+
+    SortParam:
+      name: sort
+      in: query
+      description: Sorting criteria in the format of property(asc|desc). Default sort order is ascending. Multiple sort criteria are supported.
+      schema:
+        type: array
+        items:
+          type: string
+
     ReportIdParam:
       name: reportId
       in: path
@@ -164,6 +195,12 @@ components:
             - FROM_CACHE
             - SKIPPED
             - FAILED
+        messages:
+          type: array
+          items:
+            type: string
+        isIncremental:
+          type: boolean
 
     TestDto:
       type: object

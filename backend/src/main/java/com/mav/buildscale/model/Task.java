@@ -35,4 +35,10 @@ public class Task extends AbstractEntity {
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
     private TaskStatus status = TaskStatus.EXECUTED;
+
+    @Column(name = "INCREMENTAL")
+    private boolean isIncremental;
+
+    @Column(name = "MESSAGES")
+    private String messages;
 }

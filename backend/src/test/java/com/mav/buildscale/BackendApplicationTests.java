@@ -2,6 +2,10 @@ package com.mav.buildscale;
 
 import com.mav.buildscale.api.model.AddReport201Response;
 import com.mav.buildscale.api.model.ReportDto;
+import com.mav.buildscale.api.model.TagDto;
+import com.mav.buildscale.api.model.TaskDto;
+import com.mav.buildscale.api.model.TestDto;
+import com.mav.buildscale.api.model.TestFailureDto;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +16,11 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.jdbc.Sql;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
@@ -27,17 +33,17 @@ class BackendApplicationTests {
     class GetReportsTest {
 
         @Test
-        @Sql(scripts = {"/db/test-data/report.sql"})
         void status200() {
-            // arrange
-
             // act
             final ResponseEntity<ReportDto[]> response = restTemplate.exchange("/reports", HttpMethod.GET, HttpEntity.EMPTY, ReportDto[].class);
 
             // assert
             assertThat(response)
                     .isNotNull()
-                    .returns(HttpStatus.OK, ResponseEntity::getStatusCode);
+                    .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+                    .satisfies(r -> assertThat(r.getBody())
+                            .anyMatch(reportDto -> reportDto.getId().equals("07066981-ca78-46a7-bcd2-7e99f3d6ac23"))
+                    );
         }
     }
 
@@ -50,7 +56,31 @@ class BackendApplicationTests {
             final ReportDto reportDto = new ReportDto()
                     .project("buildscale-sample")
                     .hostname("localhost")
-                    .durationInMillis(300.0);
+                    .durationInMillis(300.0)
+                    .addTagsItem(new TagDto().key("gradle.version").value("8.0.2"))
+                    .addTasksItem(new TaskDto()
+                            .path(":bar:compileJava")
+                            .startTime(1679600427153.0)
+                            .endTime(1679600427195.0)
+                            .status(TaskDto.StatusEnum.SKIPPED)
+                            .messages(List.of("NO-SOURCE"))
+                            .isIncremental(false)
+                            .durationInMillis(42.0))
+                    .addTasksItem(new TaskDto()
+                            .path(":bar:test")
+                            .startTime(1679600427318.0)
+                            .endTime(1679600428082.0)
+                            .status(TaskDto.StatusEnum.FAILED)
+                            .durationInMillis(764.0))
+                    .addTestsItem(new TestDto()
+                            .name("bingo()")
+                            .className("BarTest")
+                            .durationInMillis(20.0)
+                            .status(TestDto.StatusEnum.FAILED)
+                            .addFailuresItem(new TestFailureDto()
+                                    .message("expected: not <null>")
+                                    .stacktrace("org.opentest4j.AssertionFailedError: expected: not <null>"))
+                    );
 
             // act
             final ResponseEntity<AddReport201Response> response = restTemplate.exchange("/reports", HttpMethod.POST, new HttpEntity<>(reportDto), AddReport201Response.class);
@@ -61,6 +91,61 @@ class BackendApplicationTests {
                     .returns(HttpStatus.CREATED, ResponseEntity::getStatusCode)
                     .extracting(HttpEntity::getBody)
                     .doesNotReturn(null, AddReport201Response::getId);
+        }
+    }
+
+    @Nested
+    class GetReportByIdTest {
+
+        @Test
+        void status404() {
+            // act
+            final ResponseEntity<ReportDto> response = restTemplate.exchange("/reports/unknown", HttpMethod.GET, HttpEntity.EMPTY, ReportDto.class);
+
+            // assert
+            assertThat(response)
+                    .isNotNull()
+                    .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
+        }
+
+        @Test
+        void status200() {
+            // act
+            final ResponseEntity<ReportDto> response = restTemplate.exchange("/reports/07066981-ca78-46a7-bcd2-7e99f3d6ac23", HttpMethod.GET, HttpEntity.EMPTY, ReportDto.class);
+
+            // assert
+            assertThat(response)
+                    .isNotNull()
+                    .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+                    .satisfies(r -> assertThat(r.getBody())
+                            .returns("07066981-ca78-46a7-bcd2-7e99f3d6ac23", ReportDto::getId)
+                            .returns("buildscale-sample", ReportDto::getProject)
+                            .returns("localhost", ReportDto::getHostname)
+                            .returns(300.0, ReportDto::getDurationInMillis)
+                            .satisfies(report -> assertThat(report.getTags())
+                                    .hasSize(1)
+                                    .extracting(TagDto::getKey, TagDto::getValue)
+                                    .contains(tuple("gradle.version", "8.0.2")))
+                            .satisfies(report -> assertThat(report.getTasks())
+                                    .hasSize(2)
+                                    .extracting(TaskDto::getPath, TaskDto::getDurationInMillis, TaskDto::getStatus)
+                                    .contains(
+                                            tuple(":bar:compileJava", 42.0, TaskDto.StatusEnum.SKIPPED),
+                                            tuple(":bar:compileTestJava", 764.0, TaskDto.StatusEnum.FAILED)))
+                            .satisfies(report -> assertThat(report.getTests())
+                                    .hasSize(1)
+                                    .singleElement()
+                                    .returns("bingo()", TestDto::getName)
+                                    .returns("BarTest", TestDto::getClassName)
+                                    .returns(20.0, TestDto::getDurationInMillis)
+                                    .returns(TestDto.StatusEnum.FAILED, TestDto::getStatus)
+                                    .satisfies(test -> assertThat(test.getFailures())
+                                            .hasSize(1)
+                                            .singleElement()
+                                            .returns("expected: not <null>", TestFailureDto::getMessage)
+                                            .returns("org.opentest4j.AssertionFailedError: expected: not <null>", TestFailureDto::getStacktrace))
+                            )
+                    );
         }
     }
 }
