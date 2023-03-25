@@ -14,7 +14,6 @@ dependencies {
     compileOnly(libs.lombok)
     annotationProcessor(libs.lombok)
 
-    implementation("com.squareup.okhttp3:okhttp:4.9.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
 
     testCompileOnly(libs.lombok)
