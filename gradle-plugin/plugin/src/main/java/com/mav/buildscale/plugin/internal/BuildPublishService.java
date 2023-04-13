@@ -11,6 +11,7 @@ import org.gradle.api.services.BuildServiceParameters;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
 
@@ -39,18 +40,33 @@ public abstract class BuildPublishService extends AbstractBuildService implement
     @Override
     public void close() throws Exception {
         synchronized (getReport()) {
+
+            Optional<URL> optionalUrl = getUrl();
             final Report report = getReport();
             String data = new ObjectMapper().writeValueAsString(report);
+
             if (getParameters().getPublishEnabled().getOrElse(Boolean.FALSE).equals(Boolean.TRUE)
-                    && getParameters().getUrl().isPresent()
+                    && optionalUrl.isPresent()
                     && report.getDurationInMillis() > 0) {
                 LOGGER.lifecycle("Publishing build report...");
-                publish(getParameters().getUrl().get(), data);
+                publish(optionalUrl.get(), data);
             }
 
             if (getParameters().getVerboseEnabled().getOrElse(Boolean.FALSE).equals(Boolean.TRUE)) {
                 LOGGER.lifecycle("Build report: {}", data);
             }
+        }
+    }
+
+    private Optional<URL> getUrl() {
+        try {
+            String baseUrl = getParameters().getUrl().get().toString();
+            return baseUrl.endsWith("/")
+                    ? Optional.of(new URL("%sreports".formatted(baseUrl)))
+                    : Optional.of(new URL("%s/reports".formatted(baseUrl)));
+        } catch (MalformedURLException ex) {
+            LOGGER.info("bad url", ex);
+            return Optional.empty();
         }
     }
 
@@ -65,9 +81,7 @@ public abstract class BuildPublishService extends AbstractBuildService implement
             os.flush();
             os.close();
 
-            LOGGER.lifecycle(postConnection.getResponseMessage());
-
-            if (postConnection.getResponseCode() != 200) {
+            if (postConnection.getResponseCode() >= 400) {
                 LOGGER.warn("Unable to publish build report. status: {}, response: {}, report: {}",
                         postConnection.getResponseCode(), Optional.ofNullable(postConnection.getResponseMessage()).orElse("empty"),
                         data);
