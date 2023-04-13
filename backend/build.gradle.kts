@@ -32,13 +32,13 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4")
 
-    developmentOnly("org.springframework.boot:spring-boot-devtools")
-
     runtimeOnly("org.springframework.boot:spring-boot-starter-validation")
-
-    runtimeOnly("com.h2database:h2")
+    runtimeOnly("org.postgresql:postgresql")
     runtimeOnly("net.logstash.logback:logstash-logback-encoder:7.3")
 
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+
+    testRuntimeOnly("com.h2database:h2")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework:spring-webflux")
     testImplementation("org.springframework.graphql:spring-graphql-test")

@@ -16,6 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
@@ -109,6 +110,7 @@ class BackendApplicationTests {
         }
 
         @Test
+        @Sql(scripts = {"/db/test-data/report.sql"})
         void status200() {
             // act
             final ResponseEntity<ReportDto> response = restTemplate.exchange("/reports/07066981-ca78-46a7-bcd2-7e99f3d6ac23", HttpMethod.GET, HttpEntity.EMPTY, ReportDto.class);
