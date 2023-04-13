@@ -191,8 +191,8 @@ components:
           type: string
           enum:
             - EXECUTED
-            - UP_TO_DATE
-            - FROM_CACHE
+            - UP-TO-DATE
+            - FROM-CACHE
             - SKIPPED
             - FAILED
         messages:
