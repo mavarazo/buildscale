@@ -1,0 +1,28 @@
+---
+services:
+  backend:
+    build:
+      context: backend
+    ports:
+    - 15431:8002
+    environment:
+    - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/buildscale
+    - SPRING_DATASOURCE_USERNAME=buildscale
+    - SPRING_DATASOURCE_PASSWORD=password
+    depends_on:
+    - db
+
+  db:
+    image: postgres
+    restart: always
+    user: postgres
+    environment:
+    - POSTGRES_USER=buildscale
+    - POSTGRES_PASSWORD=password
+    ports:
+    - 15432:5432
+    volumes:
+    - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
