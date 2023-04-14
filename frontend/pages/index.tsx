@@ -1,26 +1,48 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import {Table} from "@nextui-org/react";
+import {useRouter} from "next/router";
 
 export default function Posts({ reports }) {
   return (
-      <div>
-        <h1>My latest posts {reports}</h1>
-        {/*{posts.map((post) => (*/}
-        {/*    <h2>{post.title}</h2>*/}
-        {/*))}*/}
-      </div>
+      <Table
+          bordered
+          shadow={false}
+          css={{
+              height: "auto",
+              minWidth: "100%",
+          }}
+      >
+          <Table.Header>
+              <Table.Column>Project</Table.Column>
+              <Table.Column>Hostname</Table.Column>
+              <Table.Column>Duration</Table.Column>
+          </Table.Header>
+          <Table.Body>
+              {reports.map((report, itemIndex) => (
+                  <Table.Row key={`table-body-${itemIndex}`}>
+                      <Table.Cell>{report.project}</Table.Cell>
+                      <Table.Cell>{report.hostname}</Table.Cell>
+                      <Table.Cell>{report.durationInMillis}</Table.Cell>
+                  </Table.Row>
+              ))}
+          </Table.Body>
+          <Table.Pagination
+              shadow
+              noMargin
+              align="center"
+              rowsPerPage={3}
+              onPageChange={(page) => console.log({ page })}
+          />
+      </Table>
   );
 }
 
-export async function getStaticProps() {
-    // const response = await fetch(`http://localhost:1337/categories?slug=${params.slug}`)
-    // const data = await res.json()
+export async function getStaticProps({pageable}) {
+    const response = await fetch(`http://localhost:15431/v1/reports?page=0&size=30`)
+    const data = await response.json()
 
   return {
     props: {
-      posts: 'await fetchPosts()',
+        reports: data ? data : [],
     }
   };
 }
