@@ -1,9 +1,17 @@
+import java.net.URL
+
 plugins {
     java
     id("io.freefair.lombok") version "8.0.0-rc2"
     id("org.springframework.boot") version "3.0.4"
     id("io.spring.dependency-management") version "1.1.0"
     id("org.openapi.generator") version "6.3.0"
+    id("com.mav.buildscale") version "0.0.0-SNAPSHOT"
+}
+
+buildscale {
+    uri.set(URL("http://localhost:15431"))
+    publishEnabled.set(true)
 }
 
 group = "com.mav"
@@ -63,7 +71,8 @@ tasks.openApiGenerate {
             "hideGenerationTimestamp" to "true",
             "interfaceOnly" to "true",
             "openApiNullable" to "false",
-            "useSpringBoot3" to "true"
+            "useSpringBoot3" to "true",
+            "useTags" to "true"
     )
     )
 }

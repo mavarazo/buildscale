@@ -4,7 +4,7 @@ info:
   title: Buildscale API
 
 paths:
-  /reports:
+  /v1/reports:
     get:
       summary: List all reports
       operationId: getReports
@@ -60,7 +60,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorDto"
-  /reports/{reportId}:
+  /v1/reports/{reportId}:
     get:
       summary: Info for a specific report
       operationId: getReportById
@@ -191,8 +191,8 @@ components:
           type: string
           enum:
             - EXECUTED
-            - UP-TO-DATE
-            - FROM-CACHE
+            - 'UP-TO-DATE'
+            - 'FROM-CACHE'
             - SKIPPED
             - FAILED
         messages:

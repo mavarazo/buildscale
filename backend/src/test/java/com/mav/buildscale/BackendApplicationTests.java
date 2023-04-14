@@ -6,6 +6,8 @@ import com.mav.buildscale.api.model.TagDto;
 import com.mav.buildscale.api.model.TaskDto;
 import com.mav.buildscale.api.model.TestDto;
 import com.mav.buildscale.api.model.TestFailureDto;
+import com.mav.buildscale.repository.ReportRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +32,22 @@ class BackendApplicationTests {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private ReportRepository reportRepository;
+
+    @AfterEach
+    void tearDown() {
+        reportRepository.deleteAll();
+    }
+
     @Nested
     class GetReportsTest {
 
         @Test
+        @Sql(scripts = {"/db/test-data/report.sql"})
         void status200() {
             // act
-            final ResponseEntity<ReportDto[]> response = restTemplate.exchange("/reports", HttpMethod.GET, HttpEntity.EMPTY, ReportDto[].class);
+            final ResponseEntity<ReportDto[]> response = restTemplate.exchange("/v1/reports", HttpMethod.GET, HttpEntity.EMPTY, ReportDto[].class);
 
             // assert
             assertThat(response)
@@ -84,7 +95,7 @@ class BackendApplicationTests {
                     );
 
             // act
-            final ResponseEntity<AddReport201Response> response = restTemplate.exchange("/reports", HttpMethod.POST, new HttpEntity<>(reportDto), AddReport201Response.class);
+            final ResponseEntity<AddReport201Response> response = restTemplate.exchange("/v1/reports", HttpMethod.POST, new HttpEntity<>(reportDto), AddReport201Response.class);
 
             // assert
             assertThat(response)
@@ -101,7 +112,7 @@ class BackendApplicationTests {
         @Test
         void status404() {
             // act
-            final ResponseEntity<ReportDto> response = restTemplate.exchange("/reports/unknown", HttpMethod.GET, HttpEntity.EMPTY, ReportDto.class);
+            final ResponseEntity<ReportDto> response = restTemplate.exchange("/v1/reports/unknown", HttpMethod.GET, HttpEntity.EMPTY, ReportDto.class);
 
             // assert
             assertThat(response)
@@ -113,7 +124,7 @@ class BackendApplicationTests {
         @Sql(scripts = {"/db/test-data/report.sql"})
         void status200() {
             // act
-            final ResponseEntity<ReportDto> response = restTemplate.exchange("/reports/07066981-ca78-46a7-bcd2-7e99f3d6ac23", HttpMethod.GET, HttpEntity.EMPTY, ReportDto.class);
+            final ResponseEntity<ReportDto> response = restTemplate.exchange("/v1/reports/07066981-ca78-46a7-bcd2-7e99f3d6ac23", HttpMethod.GET, HttpEntity.EMPTY, ReportDto.class);
 
             // assert
             assertThat(response)
