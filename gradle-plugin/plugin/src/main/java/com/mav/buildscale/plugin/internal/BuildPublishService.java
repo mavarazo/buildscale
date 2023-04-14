@@ -39,6 +39,7 @@ public abstract class BuildPublishService extends AbstractBuildService implement
 
     @Override
     public void close() throws Exception {
+
         synchronized (getReport()) {
 
             Optional<URL> optionalUrl = getUrl();
@@ -59,11 +60,16 @@ public abstract class BuildPublishService extends AbstractBuildService implement
     }
 
     private Optional<URL> getUrl() {
+        if (!getParameters().getUrl().isPresent()) {
+            return Optional.empty();
+        }
+
         try {
             String baseUrl = getParameters().getUrl().get().toString();
-            return baseUrl.endsWith("/")
-                    ? Optional.of(new URL("%sreports".formatted(baseUrl)))
-                    : Optional.of(new URL("%s/reports".formatted(baseUrl)));
+            if (!baseUrl.endsWith("/")) {
+                baseUrl += "/";
+            }
+            return Optional.of(new URL(baseUrl + "v1/reports"));
         } catch (MalformedURLException ex) {
             LOGGER.info("bad url", ex);
             return Optional.empty();
