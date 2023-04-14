@@ -1,11 +1,6 @@
 package com.mav.buildscale;
 
-import com.mav.buildscale.api.model.AddReport201Response;
-import com.mav.buildscale.api.model.ReportDto;
-import com.mav.buildscale.api.model.TagDto;
-import com.mav.buildscale.api.model.TaskDto;
-import com.mav.buildscale.api.model.TestDto;
-import com.mav.buildscale.api.model.TestFailureDto;
+import com.mav.buildscale.api.model.*;
 import com.mav.buildscale.repository.ReportRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -47,14 +42,17 @@ class BackendApplicationTests {
         @Sql(scripts = {"/db/test-data/report.sql"})
         void status200() {
             // act
-            final ResponseEntity<ReportDto[]> response = restTemplate.exchange("/v1/reports", HttpMethod.GET, HttpEntity.EMPTY, ReportDto[].class);
+            final ResponseEntity<ReportListDto> response = restTemplate.exchange("/v1/reports", HttpMethod.GET, HttpEntity.EMPTY, ReportListDto.class);
 
             // assert
             assertThat(response)
                     .isNotNull()
                     .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
                     .satisfies(r -> assertThat(r.getBody())
-                            .anyMatch(reportDto -> reportDto.getId().equals("07066981-ca78-46a7-bcd2-7e99f3d6ac23"))
+                            .returns(1L, ReportListDto::getTotalElements)
+                            .returns(1, ReportListDto::getTotalPages)
+                            .satisfies(b -> assertThat(b.getElements())
+                                    .anyMatch(reportDto -> reportDto.getId().equals("07066981-ca78-46a7-bcd2-7e99f3d6ac23")))
                     );
         }
     }
