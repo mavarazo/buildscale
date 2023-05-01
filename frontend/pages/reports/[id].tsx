@@ -1,10 +1,9 @@
 import useSWR from 'swr'
 import {useRouter} from "next/router";
-import ms from 'ms';
 import {format} from 'date-fns';
 import Timeline from "@/components/Timeline";
 import {Report} from "@/lib/types";
-import {Box, Heading, SimpleGrid, Text} from "@chakra-ui/react";
+import {Box, Heading, SimpleGrid} from "@chakra-ui/react";
 import React from "react";
 import TaskTable from "@/components/TaskTable";
 import TestTable from "@/components/TestTable";
@@ -22,11 +21,12 @@ const dict: Record<string, string> = {
     "os.version": "OS version"
 }
 
-const fetcher = (...args) => fetch(...args).then(res => res.json())
 
 export default function ReportPage() {
     const {query, isReady} = useRouter();
     const id = query.id;
+
+    const fetcher = (...args) => fetch(...args).then(res => res.json())
 
     const {data, error} = useSWR<Report>(id ? `/api/reports/${id}` : null, fetcher)
 

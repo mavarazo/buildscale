@@ -1,16 +1,18 @@
 import React, {useState} from "react";
 import useSWR, {mutate} from 'swr'
+import React, {useState} from "react";
+import useSWR, {mutate} from 'swr'
 import {useRouter} from "next/router";
 import {format} from "date-fns";
 import {ReportList} from "@/lib/types";
-import ms from "ms";
 import {Box, Button, ButtonGroup, Flex, Spacer, Table, Tbody, Td, Text, Th, Thead, Tr} from "@chakra-ui/react";
 import {ChevronLeftIcon, ChevronRightIcon, RepeatIcon} from "@chakra-ui/icons";
 
-const fetcher = (...args) => fetch(...args).then(res => res.json())
 
 export default function ReportsPage() {
     const router = useRouter();
+
+    const fetcher = (...args) => fetch(...args).then(res => res.json())
 
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize, setPageSize] = useState(3);
@@ -50,7 +52,7 @@ export default function ReportsPage() {
                                 <Td>{format(new Date(report.created), 'dd.MM.yyyy HH:mm:ss')}</Td>
                                 <Td>{report.project}</Td>
                                 <Td>{report.hostname}</Td>
-                                <Td>{ms(report.durationInMillis)}</Td>
+                                <Td>{report.durationInMillis}</Td>
                             </Tr>
                         )) :
                         <Tr>
