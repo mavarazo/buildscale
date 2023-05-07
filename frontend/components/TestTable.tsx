@@ -1,15 +1,27 @@
-import {Heading, Table, Tbody, Td, Text, Th, Thead, Tr} from "@chakra-ui/react";
+import {Box, Card, CardHeader, Heading, Table, Tbody, Td, Text, Th, Thead, Tr} from "@chakra-ui/react";
 import React from "react";
+import prettyMilliseconds from "pretty-ms";
 
 const dict: Record<string, string> = {}
 
 const Tasks = ({tests}) => {
     const translate = (key: string, ...args) => dict[key] ? dict[key] : key;
 
+    const durationInMillis = tests.reduce((sum, current) => sum + current.durationInMillis, 0);
+
     return (
-        <div>
-            <Heading>Tests details</Heading>
-            <Text>{tests.length} test(s) executed</Text>
+        <Card mt={6}>
+            <CardHeader>
+                <Heading size="md">Tests details</Heading>
+                <Text fontSize='sm' color='gray.500' fontWeight='normal'>
+                    <Text fontWeight='bold' as='span'>
+                        {tests.length} {tests.length > 1 ? "tests" : "test"}
+                    </Text>{" "}exectued{" "}
+                    <Text fontWeight='bold' as='span'>
+                        in {prettyMilliseconds(durationInMillis)}
+                    </Text>
+                </Text>
+            </CardHeader>
             <Table>
                 <Thead>
                     <Tr>
@@ -32,9 +44,8 @@ const Tasks = ({tests}) => {
                     }
                 </Tbody>
             </Table>
-        </div>
-    )
-        ;
+        </Card>
+    );
 }
 
 export default Tasks;

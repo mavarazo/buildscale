@@ -1,12 +1,12 @@
 import useSWR from 'swr'
 import {useRouter} from "next/router";
 import {format} from 'date-fns';
-import Timeline from "@/components/Timeline";
 import {Report} from "@/lib/types";
-import {Box, Heading, SimpleGrid} from "@chakra-ui/react";
+import {Box, Card, CardHeader, Heading, SimpleGrid, Text} from "@chakra-ui/react";
 import React from "react";
 import TaskTable from "@/components/TaskTable";
 import TestTable from "@/components/TestTable";
+import Timeline from "@/components/Timeline";
 
 const dict: Record<string, string> = {
     "gradle.version": "Gradle version",
@@ -37,25 +37,28 @@ export default function ReportPage() {
 
     return (
         <main>
-            <Heading>
-                <span className="text-purple-500">{data.project}</span>
-                &nbsp;on&nbsp;
-                <span className="text-pink-500">{data.hostname}</span>
-                &nbsp;at&nbsp;
-                <span className="text-green-500">{format(new Date(data.created), 'dd.MM.yyyy HH:mm:ss')}</span>
-            </Heading>
+            <Card>
+                <CardHeader>
+                    <Heading size="md">
+                        <Text color="purple.500" as="span">{data.project}</Text>
+                        {" "}on{" "}
+                        <Text color="pink.500"  as="span">{data.hostname}</Text>
+                        {" "}at{" "}
+                        <Text color="green.500" as="span">{format(new Date(data.created), 'dd.MM.yyyy HH:mm:ss')}</Text>
+                    </Heading>
+                </CardHeader>
+                <SimpleGrid mx={6} mb={6} columns={{sm: 2, md: 5}} spacing={3}>
+                    {data.tags.sort((a: any, b: any) => {
+                        return a.key!.localeCompare(b.key!)
+                    }).map((tag, itemIndex) => (
+                        <Box>
+                            {translate(tag.key)}: {tag.value}
+                        </Box>
+                    ))}
+                </SimpleGrid>
+            </Card>
 
-            <SimpleGrid columns={{sm: 2, md: 5}} spacing={3}>
-                {data.tags.sort((a: any, b: any) => {
-                    return a.key!.localeCompare(b.key!)
-                }).map((tag, itemIndex) => (
-                    <Box>
-                        {translate(tag.key)}: {tag.value}
-                    </Box>
-                ))}
-            </SimpleGrid>
-
-            <Timeline tasks={data.tasks}/>
+            <Timeline tasks={data.tasks} />
             <TaskTable tasks={data.tasks} durationInMillis={data.durationInMillis}/>
             <TestTable tests={data.tests}/>
         </main>

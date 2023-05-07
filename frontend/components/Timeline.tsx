@@ -1,43 +1,85 @@
-import {Heading, Tooltip} from "@chakra-ui/react";
-import ms from "ms";
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import {Bar} from 'react-chartjs-2';
 import prettyMilliseconds from "pretty-ms";
+import {Box, Card, CardHeader, Heading} from "@chakra-ui/react";
+
+ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+);
 
 const Timeline = ({tasks}) => {
-    if (!tasks) return <div>loading...</div>
 
     const firstTask = tasks.reduce((prev, current) => (prev.startTime < current.startTime) ? prev : current);
     const lastTask = tasks.reduce((prev, current) => (prev.endTime > current.endTime) ? prev : current);
 
-    const relativeStartTime = (startTime: number) => {
-        const result = ((startTime - firstTask.startTime) / (lastTask.endTime - firstTask.startTime)) * 100;
-        console.log(`start: ${result}`);
-        return result;
+    const durationMap: Map<string, number> = new Map<string, number>();
+    tasks.forEach(t => durationMap.set(t.path, t.durationInMillis));
+
+    const footer = (items) => {
+        let duration = 0;
+
+        items.forEach(i => {
+            duration = (durationMap.get(i.label));
+        })
+        return 'Duration: ' + prettyMilliseconds(duration);
     };
-    const relativeEndTime = (endTime: number) => {
-        const result = ((endTime - firstTask.startTime) / (lastTask.endTime - firstTask.startTime)) * 100;
-        console.log(`end: ${result}`);
-        return result;
+
+    const options = {
+        indexAxis: 'y' as const,
+        interaction: {
+            intersect: false,
+            mode: 'index',
+        },
+        plugins: {
+            legend:
+                {
+                    display: false
+                },
+            tooltip: {
+                callbacks: {
+                    footer: footer,
+                }
+            }
+        },
+        responsive: true,
+        scale: {
+            x: {
+                min: firstTask.startTime,
+                max: lastTask.endTime
+            }
+        }
+    };
+
+    const data = {
+        labels: tasks.map(t => t.path),
+        datasets: [
+            {
+                data: tasks.map(t => [t.startTime, t.endTime === t.startTime ? t.startTime + 1 : t.endTime]),
+                backgroundColor: '#a855f7',
+            }
+        ],
     };
 
     return (
-        <div>
-            <Heading>Task execution order</Heading>
-            {tasks.map((task) => (
-                <div className="grid grid-cols-12 relative overflow-hidden">
-                    <div className="col-span-2 m-2 whitespace-nowrap">
-                        {task.path}
-                    </div>
-                    <Tooltip label={`${task.durationInMillis}ms`}>
-                        <div className="col-span-10 py-2 my-2 bg-purple-500 rounded text-center" style={{
-                            marginLeft: `${relativeStartTime(task.startTime)}%`,
-                            width: `${relativeEndTime(task.endTime)}%`
-                        }}>
-                        </div>
-                    </Tooltip>
-                </div>
-            ))
-            }
-        </div>
+        <Card mt={6}>
+            <CardHeader>
+                <Heading size="md">Timeline</Heading>
+            </CardHeader>
+            <Bar className="mx-6" options={options} data={data}/>
+        </Card>
     );
 }
 

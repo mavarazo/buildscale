@@ -1,6 +1,6 @@
 import {format} from "date-fns";
 import ms from "ms";
-import {Heading, Table, Tbody, Td, Text, Th, Thead, Tr} from "@chakra-ui/react";
+import {Box, Card, CardHeader, Heading, Table, Tbody, Td, Text, Th, Thead, Tr} from "@chakra-ui/react";
 import React from "react";
 import prettyMilliseconds from "pretty-ms";
 
@@ -8,9 +8,18 @@ const TaskTable = ({tasks, durationInMillis}) => {
     const translate = (key: string, ...args) => dict[key] ? dict[key] : key;
 
     return (
-        <div>
-            <Heading>Task details</Heading>
-            <Text>{tasks.length} task(s) executed in {prettyMilliseconds(durationInMillis)}</Text>
+        <Card mt={6}>
+            <CardHeader>
+                <Heading size="md">Task details</Heading>
+                <Text fontSize='sm' color='gray.500' fontWeight='normal'>
+                    <Text fontWeight='bold' as='span'>
+                        {tasks.length} {tasks.length > 1 ? "tasks" : "task"}
+                    </Text>{" "}exectued{" "}
+                    <Text fontWeight='bold' as='span'>
+                        in {prettyMilliseconds(durationInMillis)}
+                    </Text>
+                </Text>
+            </CardHeader>
             <Table mt={5}>
                 <Thead>
                     <Tr>
@@ -38,7 +47,7 @@ const TaskTable = ({tasks, durationInMillis}) => {
                     }
                 </Tbody>
             </Table>
-        </div>
+        </Card>
     );
 }
 
