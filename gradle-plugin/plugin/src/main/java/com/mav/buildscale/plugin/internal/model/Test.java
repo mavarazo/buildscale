@@ -24,9 +24,9 @@ public class Test {
     @Builder.Default
     private final TestStatus status = TestStatus.SUCCESS;
 
-    private final List<TestFailure> testFailures = new ArrayList<>();
+    private final List<TestFailure> failures = new ArrayList<>();
 
     public void addTestFailure(final TestFailure testFailure) {
-        testFailures.add(testFailure);
+        failures.add(testFailure);
     }
 }
