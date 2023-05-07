@@ -12,6 +12,7 @@ plugins {
 buildscale {
     uri.set(URL("http://localhost:15431"))
     publishEnabled.set(true)
+    verboseEnabled.set(true)
 }
 
 group = "com.mav"

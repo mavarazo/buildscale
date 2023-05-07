@@ -93,14 +93,15 @@ class BackendApplicationTests {
                     );
 
             // act
-            final ResponseEntity<AddReport201Response> response = restTemplate.exchange("/v1/reports", HttpMethod.POST, new HttpEntity<>(reportDto), AddReport201Response.class);
+            final ResponseEntity<Void> response = restTemplate.exchange("/v1/reports", HttpMethod.POST, new HttpEntity<>(reportDto), Void.class);
 
             // assert
             assertThat(response)
                     .isNotNull()
                     .returns(HttpStatus.CREATED, ResponseEntity::getStatusCode)
-                    .extracting(HttpEntity::getBody)
-                    .doesNotReturn(null, AddReport201Response::getId);
+                    .satisfies(r -> assertThat(r.getHeaders())
+                            .flatExtracting("Location")
+                            .isNotEmpty());
         }
     }
 
