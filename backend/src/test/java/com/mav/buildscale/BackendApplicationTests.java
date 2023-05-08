@@ -134,6 +134,7 @@ class BackendApplicationTests {
                             .returns("buildscale-sample", ReportDto::getProject)
                             .returns("localhost", ReportDto::getHostname)
                             .returns(300.0, ReportDto::getDurationInMillis)
+                            .returns(ReportDto.StatusEnum.FAILED, ReportDto::getStatus)
                             .satisfies(report -> assertThat(report.getTags())
                                     .hasSize(1)
                                     .extracting(TagDto::getKey, TagDto::getValue)

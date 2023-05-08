@@ -150,6 +150,12 @@ components:
         durationInMillis:
           type: number
           format: double
+        status:
+          type: string
+          enum:
+            - SUCCESS
+            - FAILED
+          default: SUCCESS
         tags:
           type: array
           items:

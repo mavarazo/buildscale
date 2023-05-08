@@ -1,21 +1,8 @@
 package com.mav.buildscale.mapper;
 
-import com.mav.buildscale.api.model.ReportDto;
-import com.mav.buildscale.api.model.TagDto;
-import com.mav.buildscale.api.model.TaskDto;
-import com.mav.buildscale.api.model.TestDto;
-import com.mav.buildscale.api.model.TestFailureDto;
-import com.mav.buildscale.model.Report;
-import com.mav.buildscale.model.Tag;
-import com.mav.buildscale.model.Task;
-import com.mav.buildscale.model.Test;
-import com.mav.buildscale.model.TestFailure;
-import org.mapstruct.AfterMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.ReportingPolicy;
+import com.mav.buildscale.api.model.*;
+import com.mav.buildscale.model.*;
+import org.mapstruct.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,8 +32,19 @@ public interface ReportMapper {
                 .forEach(report::addTest);
     }
 
+    @Mapping(target = "status", ignore = true)
     @Mapping(target = "id", source = "oid")
     ReportDto mapReportToReportDto(final Report report);
+
+    @AfterMapping
+    default void afterMapping(@MappingTarget final ReportDto reportDto, final Report report) {
+        final boolean hasFailedTask = report.getTasks()
+                .stream()
+                .anyMatch(t -> TaskStatus.FAILED.equals(t.getStatus()));
+        if (hasFailedTask) {
+            reportDto.status(ReportDto.StatusEnum.FAILED);
+        }
+    }
 
     @Mapping(target = "report", ignore = true)
     Tag mapTagDtoToTag(final TagDto tagDto);
