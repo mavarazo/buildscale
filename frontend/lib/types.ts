@@ -5,40 +5,60 @@ export interface ReportList {
 }
 
 export interface Report {
-    id: string;
-    created: string;
-    project: string;
-    hostname: string;
-    durationInMillis: number;
-    tags: Tag[];
-    tasks: Task[];
-    tests: Test[];
+  id: string;
+  created: string;
+  project: string;
+  hostname: string;
+  durationInMillis: number;
+  status: Status;
+  tags: Tag[];
+  tasks: Task[];
+  tests: Test[];
+}
+
+export enum Status {
+  SUCCESS,
+  FAILED,
 }
 
 export interface Tag {
-    key: string;
-    value: string;
+  key: string;
+  value: string;
 }
 
 export interface Task {
-    path: string;
-    startTime: number;
-    endTime: number;
-    durationInMillis: number;
-    status: string;
-    messages: string[];
-    isIncremental: boolean;
+  path: string;
+  startTime: number;
+  endTime: number;
+  durationInMillis: number;
+  status: TaskStatus;
+  messages: string[];
+  isIncremental: boolean;
+}
+
+export enum TaskStatus {
+  EXECUTED,
+  "UP-TO-DATE",
+  "FROM-CACHE",
+  SKIPPED,
+  FAILED,
 }
 
 export interface Test {
-    name: string;
-    className: string;
-    durationInMillis: number;
-    status: string;
-    failures: TestFailure[];
+  name: string;
+  className: string;
+  durationInMillis: number;
+  status: TestStatus;
+  failures: TestFailure[];
+}
+
+export enum TestStatus {
+  SUCCESS,
+  FAILED,
+  SKIPPED,
 }
 
 export interface TestFailure {
-    message: string;
-    stacktrace: string;
+  message: string;
+  stacktrace: string;
 }
