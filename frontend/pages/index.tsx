@@ -19,11 +19,13 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
+import { RepeatIcon } from "@chakra-ui/icons";
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  RepeatIcon,
-} from "@chakra-ui/icons";
+  HiChevronDoubleLeft,
+  HiChevronDoubleRight,
+  HiChevronLeft,
+  HiChevronRight,
+} from "react-icons/all";
 
 export default function ReportsPage() {
   const router = useRouter();
@@ -128,19 +130,29 @@ export default function ReportsPage() {
           <Spacer />
           <ButtonGroup p={5} isAttached variant="outline">
             <Button
-              leftIcon={<ChevronLeftIcon />}
+              leftIcon={<HiChevronDoubleLeft />}
+              onClick={() => handlePageChange(0)}
+              isDisabled={pageIndex == 0}
+            ></Button>
+            <Button
+              leftIcon={<HiChevronLeft />}
               onClick={() => handlePageChange(pageIndex - 1)}
               isDisabled={pageIndex == 0}
             >
               Prev
             </Button>
             <Button
-              rightIcon={<ChevronRightIcon />}
+              rightIcon={<HiChevronRight />}
               onClick={() => handlePageChange(pageIndex + 1)}
               isDisabled={pageIndex + 1 == totalPages}
             >
               Next
             </Button>
+            <Button
+              rightIcon={<HiChevronDoubleRight />}
+              onClick={() => handlePageChange(totalPages - 1)}
+              isDisabled={pageIndex + 1 == totalPages}
+            ></Button>
           </ButtonGroup>
         </Flex>
       </Card>
