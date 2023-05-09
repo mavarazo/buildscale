@@ -1,7 +1,7 @@
 export interface ReportList {
-    totalElements: number;
-    totalPages: number;
-    elements: Report[];
+  totalElements: number;
+  totalPages: number;
+  elements: Report[];
 }
 
 export interface Report {
