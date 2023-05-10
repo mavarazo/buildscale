@@ -1,4 +1,4 @@
-openapi: "3.0.0"
+openapi: '3.0.0'
 info:
   version: 1.0.0
   title: Buildscale API
@@ -20,13 +20,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReportListDto"
+                $ref: '#/components/schemas/ReportListDto'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: '#/components/schemas/ErrorDto'
     post:
       summary: Add a report
       operationId: addReport
@@ -51,7 +51,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: '#/components/schemas/ErrorDto'
   /v1/reports/{reportId}:
     get:
       summary: Info for a specific report
@@ -66,13 +66,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ReportDto"
+                $ref: '#/components/schemas/ReportDto'
         default:
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorDto"
+                $ref: '#/components/schemas/ErrorDto'
 components:
   parameters:
     PageParam:
