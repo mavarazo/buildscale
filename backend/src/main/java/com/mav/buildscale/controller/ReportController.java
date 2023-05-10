@@ -7,6 +7,7 @@ import com.mav.buildscale.mapper.ReportMapper;
 import com.mav.buildscale.model.Report;
 import com.mav.buildscale.repository.ReportRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -22,6 +23,9 @@ import java.util.List;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ReportController implements ReportsApi {
+
+    @Value("${buildscale.route}")
+    private final String route;
 
     private final ReportRepository reportRepository;
     private final ReportMapper reportMapper;
@@ -43,13 +47,13 @@ public class ReportController implements ReportsApi {
     public ResponseEntity<Void> addReport(final ReportDto reportDto) {
         final Report report = reportRepository.save(reportMapper.mapReportDtoToReportDo(reportDto));
 
-        final URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+        final URI uri = ServletUriComponentsBuilder.fromHttpUrl(route)
                 .path("/v1/reports/{reportId}")
                 .buildAndExpand(report.getOid())
                 .toUri();
         return ResponseEntity.created(uri).build();
     }
-
+    
     @Override
     public ResponseEntity<ReportDto> getReportById(final String reportId) {
         return reportRepository.findById(reportId)

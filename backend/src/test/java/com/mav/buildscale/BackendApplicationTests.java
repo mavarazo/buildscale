@@ -101,7 +101,7 @@ class BackendApplicationTests {
                     .returns(HttpStatus.CREATED, ResponseEntity::getStatusCode)
                     .satisfies(r -> assertThat(r.getHeaders())
                             .flatExtracting("Location")
-                            .isNotEmpty());
+                            .anyMatch(l -> l.toString().startsWith("https://buildscale.com/v1/reports/")));
         }
     }
 
