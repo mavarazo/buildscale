@@ -73,6 +73,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorDto'
+  /v1/tests/{testId}:
+    get:
+      summary: Info for a specific test
+      operationId: getTestById
+      tags:
+        - Tests
+      parameters:
+        - $ref: '#/components/parameters/TestIdParam'
+      responses:
+        '200':
+          description: A specific test
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TestDto'
+        default:
+          description: Unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDto'
 components:
   parameters:
     PageParam:
@@ -110,9 +131,21 @@ components:
       schema:
         $ref: '#/components/schemas/ReportId'
 
+    TestIdParam:
+      name: testId
+      in: path
+      required: true
+      description: The id of the test to retrieve
+      schema:
+        $ref: '#/components/schemas/TestId'
+
   schemas:
     ReportId:
       description: Id of a report
+      type: string
+
+    TestId:
+      description: Id of a test
       type: string
 
     ReportListDto:
@@ -221,6 +254,8 @@ components:
         - durationInMillis
         - failures
       properties:
+        id:
+          $ref: '#/components/schemas/TestId'
         name:
           type: string
         className:

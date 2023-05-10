@@ -1,6 +1,11 @@
 package com.mav.buildscale;
 
-import com.mav.buildscale.api.model.*;
+import com.mav.buildscale.api.model.ReportDto;
+import com.mav.buildscale.api.model.ReportListDto;
+import com.mav.buildscale.api.model.TagDto;
+import com.mav.buildscale.api.model.TaskDto;
+import com.mav.buildscale.api.model.TestDto;
+import com.mav.buildscale.api.model.TestFailureDto;
 import com.mav.buildscale.repository.ReportRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -36,7 +41,7 @@ class BackendApplicationTests {
     }
 
     @Nested
-    class GetReportsTest {
+    class GetReportsTests {
 
         @Test
         @Sql(scripts = {"/db/test-data/report.sql"})
@@ -58,7 +63,7 @@ class BackendApplicationTests {
     }
 
     @Nested
-    class AddReportTest {
+    class AddReportTests {
 
         @Test
         void status201() {
@@ -106,7 +111,7 @@ class BackendApplicationTests {
     }
 
     @Nested
-    class GetReportByIdTest {
+    class GetReportByIdTests {
 
         @Test
         void status404() {
@@ -158,6 +163,44 @@ class BackendApplicationTests {
                                             .returns("expected: not <null>", TestFailureDto::getMessage)
                                             .returns("org.opentest4j.AssertionFailedError: expected: not <null>", TestFailureDto::getStacktrace))
                             )
+                    );
+        }
+    }
+
+    @Nested
+    class GetTestByIdTests {
+
+        @Test
+        void status404() {
+            // act
+            final ResponseEntity<TestDto> response = restTemplate.exchange("/v1/tests/unknown", HttpMethod.GET, HttpEntity.EMPTY, TestDto.class);
+
+            // assert
+            assertThat(response)
+                    .isNotNull()
+                    .returns(HttpStatus.NOT_FOUND, ResponseEntity::getStatusCode);
+        }
+
+        @Test
+        @Sql(scripts = {"/db/test-data/report.sql"})
+        void status200() {
+            // act
+            final ResponseEntity<TestDto> response = restTemplate.exchange("/v1/tests/2aeaf54c-680a-48cb-a4e5-74584f0a63c8", HttpMethod.GET, HttpEntity.EMPTY, TestDto.class);
+
+            // assert
+            assertThat(response)
+                    .isNotNull()
+                    .returns(HttpStatus.OK, ResponseEntity::getStatusCode)
+                    .satisfies(r -> assertThat(r.getBody())
+                            .returns("bingo()", TestDto::getName)
+                            .returns("BarTest", TestDto::getClassName)
+                            .returns(20.0, TestDto::getDurationInMillis)
+                            .returns(TestDto.StatusEnum.FAILED, TestDto::getStatus)
+                            .satisfies(test -> assertThat(test.getFailures())
+                                    .hasSize(1)
+                                    .singleElement()
+                                    .returns("expected: not <null>", TestFailureDto::getMessage)
+                                    .returns("org.opentest4j.AssertionFailedError: expected: not <null>", TestFailureDto::getStacktrace))
                     );
         }
     }
