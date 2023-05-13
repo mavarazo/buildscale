@@ -13,10 +13,13 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import prettyMilliseconds from "pretty-ms";
+import { useRouter } from "next/router";
 
 const dict: Record<string, string> = {};
 
 const Tasks = ({ tests }) => {
+  const router = useRouter();
+
   const translate = (key: string, ...args) => (dict[key] ? dict[key] : key);
 
   const durationInMillis = tests.reduce(
@@ -32,9 +35,9 @@ const Tasks = ({ tests }) => {
           <Text fontWeight="bold" as="span">
             {tests.length} {tests.length > 1 ? "tests" : "test"}
           </Text>{" "}
-          exectued{" "}
+          exectued{" in "}
           <Text fontWeight="bold" as="span">
-            in {prettyMilliseconds(durationInMillis)}
+            {prettyMilliseconds(durationInMillis)}
           </Text>
         </Text>
       </CardHeader>
@@ -50,7 +53,11 @@ const Tasks = ({ tests }) => {
         <Tbody>
           {tests.length > 0 ? (
             tests.map((test, itemIndex) => (
-              <Tr key={`tr-test-${itemIndex}`}>
+              <Tr
+                key={`tr-test-${itemIndex}`}
+                className="cursor-pointer hover:bg-gray-100"
+                onClick={() => router.push(`/tests/${test.id}`)}
+              >
                 <Td>{test.name}</Td>
                 <Td>{test.className}</Td>
                 <Td isNumeric>{test.durationInMillis}</Td>
