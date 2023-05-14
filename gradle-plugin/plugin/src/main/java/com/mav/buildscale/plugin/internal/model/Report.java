@@ -21,6 +21,9 @@ public class Report implements Serializable {
     private String project;
     private String hostname;
     private long durationInMillis;
+
+    @Builder.Default
+    private Status status = Status.SUCCESS;
     private final List<Task> tasks = new ArrayList<>();
     private final List<Tag> tags = new ArrayList<>();
     private final List<Test> tests = new ArrayList<>();
@@ -49,5 +52,9 @@ public class Report implements Serializable {
         } catch (final Exception ex) {
             return null;
         }
+    }
+
+    public Status getStatus() {
+        return tasks.stream().anyMatch(t -> TaskStatus.FAILED.equals(t.getStatus())) ? Status.FAILED : Status.SUCCESS;
     }
 }
