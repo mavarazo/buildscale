@@ -16,4 +16,4 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 
 buildscale:
-  route: https://buildscale.com
+  baseUrl: https://buildscale.com

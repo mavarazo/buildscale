@@ -6,7 +6,7 @@ spring:
     open-in-view: false
   liquibase:
     enabled: true
-    change-log: /db/changelog/master.xml
+    change-log: /db/changelog/main.xml
 
 logging:
   config: classpath:logback-spring.xml

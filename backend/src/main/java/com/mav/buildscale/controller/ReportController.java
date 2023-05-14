@@ -24,8 +24,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportController implements ReportsApi {
 
-    @Value("${buildscale.route}")
-    private final String route;
+    @Value("${buildscale.baseUrl}")
+    private final String baseUrl;
 
     private final ReportRepository reportRepository;
     private final ReportMapper reportMapper;
@@ -47,8 +47,8 @@ public class ReportController implements ReportsApi {
     public ResponseEntity<Void> addReport(final ReportDto reportDto) {
         final Report report = reportRepository.save(reportMapper.mapReportDtoToReportDo(reportDto));
 
-        final URI uri = ServletUriComponentsBuilder.fromHttpUrl(route)
-                .path("/v1/reports/{reportId}")
+        final URI uri = ServletUriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path("/r/{reportId}")
                 .buildAndExpand(report.getOid())
                 .toUri();
         return ResponseEntity.created(uri).build();

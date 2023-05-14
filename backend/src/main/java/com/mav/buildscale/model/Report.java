@@ -4,6 +4,8 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Getter;
@@ -34,7 +36,11 @@ public class Report extends AbstractEntity {
 
     @Column(name = "DURATION")
     private Long durationInMillis;
-    
+
+    @Column(name = "STATUS")
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.SUCCESS;
+
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tag> tags = new ArrayList<>();
 

@@ -2,11 +2,13 @@ insert into bes_report (created,
                         duration,
                         hostname,
                         project,
+                        status,
                         oid)
 values ('2023-03-22T21:58:42.375501',
         300,
         'localhost',
         'buildscale-sample',
+        'FAILED',
         '07066981-ca78-46a7-bcd2-7e99f3d6ac23');
 
 insert into bes_tag (key_val, report_oid, value_val, oid)

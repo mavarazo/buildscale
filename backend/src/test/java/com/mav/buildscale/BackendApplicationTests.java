@@ -72,6 +72,7 @@ class BackendApplicationTests {
                     .project("buildscale-sample")
                     .hostname("localhost")
                     .durationInMillis(300.0)
+                    .status(ReportDto.StatusEnum.FAILED)
                     .addTagsItem(new TagDto().key("gradle.version").value("8.0.2"))
                     .addTasksItem(new TaskDto()
                             .path(":bar:compileJava")
@@ -106,7 +107,7 @@ class BackendApplicationTests {
                     .returns(HttpStatus.CREATED, ResponseEntity::getStatusCode)
                     .satisfies(r -> assertThat(r.getHeaders())
                             .flatExtracting("Location")
-                            .anyMatch(l -> l.toString().startsWith("https://buildscale.com/v1/reports/")));
+                            .anyMatch(l -> l.toString().startsWith("https://buildscale.com/r/")));
         }
     }
 

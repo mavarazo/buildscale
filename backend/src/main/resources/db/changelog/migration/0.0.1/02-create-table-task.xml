@@ -25,7 +25,9 @@
             <column name="DURATION" type="BIGINT" remarks="in millis">
                 <constraints nullable="false"/>
             </column>
-            <column name="STATUS" type="VARCHAR2(255)"/>
+            <column name="STATUS" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="INCREMENTAL" type="boolean" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
