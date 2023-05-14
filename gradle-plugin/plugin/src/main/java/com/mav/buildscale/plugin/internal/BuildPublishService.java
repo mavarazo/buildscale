@@ -13,7 +13,10 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
 import java.util.Optional;
+
+import static java.util.Objects.nonNull;
 
 /**
  * merge and publish report and info
@@ -87,7 +90,12 @@ public abstract class BuildPublishService extends AbstractBuildService implement
             os.flush();
             os.close();
 
-            if (postConnection.getResponseCode() >= 400) {
+            if (postConnection.getResponseCode() == 201) {
+                String location = postConnection.getHeaderField("Location");
+                if (nonNull(location) && location.trim().length() > 0 && isValidUrl(location)) {
+                    LOGGER.lifecycle("View build report in Buildscale: {}", location);
+                }
+            } else if (postConnection.getResponseCode() >= 400) {
                 LOGGER.warn("Unable to publish build report. status: {}, response: {}, report: {}",
                         postConnection.getResponseCode(), Optional.ofNullable(postConnection.getResponseMessage()).orElse("empty"),
                         data);
@@ -96,6 +104,15 @@ public abstract class BuildPublishService extends AbstractBuildService implement
             LOGGER.warn("Unable to publish build report. {}, report: {}",
                     e.getMessage(),
                     data);
+        }
+    }
+
+    private static boolean isValidUrl(final String url) {
+        try {
+            new URL(url);
+            return true;
+        } catch (MalformedURLException e) {
+            return false;
         }
     }
 }
