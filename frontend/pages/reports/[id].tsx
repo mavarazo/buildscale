@@ -13,11 +13,9 @@ export default function ReportPage() {
   const { query, isReady } = useRouter();
   const id = query.id;
 
-  const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
   const { data, error } = useSWR<Report>(
     id ? `/api/reports/${id}` : null,
-    fetcher
+    (url: string) => fetch(url).then((res) => res.json())
   );
 
   if (error) return <div>failed to load</div>;

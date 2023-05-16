@@ -16,9 +16,10 @@ export default function TestPage() {
   const { query, isReady } = useRouter();
   const id = query.id;
 
-  const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
-  const { data, error } = useSWR<Test>(id ? `/api/tests/${id}` : null, fetcher);
+  const { data, error } = useSWR<Test>(
+    id ? `/api/tests/${id}` : null,
+    (url: string) => fetch(url).then((res) => res.json())
+  );
 
   if (error) return <div>failed to load</div>;
   if (!data) return <div>loading...</div>;
@@ -43,9 +44,13 @@ export default function TestPage() {
           </Text>
         </CardHeader>
         <CardBody>
-          {data.failures.map((failure) => {
+          {data.failures.map((failure, itemIndex) => {
             return (
-              <VStack spacing={2} alignItems="flex-start">
+              <VStack
+                key={`stack-failure-${itemIndex}`}
+                spacing={2}
+                alignItems="flex-start"
+              >
                 <Heading size="sm">Message</Heading>
                 <Code w="full">{failure.message}</Code>
                 <Heading size="sm">Stacktrace</Heading>

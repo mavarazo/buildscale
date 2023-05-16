@@ -7,6 +7,7 @@ import {
   StatNumber,
 } from "@chakra-ui/react";
 import React from "react";
+import { Tag } from "@/lib/types";
 
 const dict: Record<string, string> = {
   "gradle.version": "Gradle version",
@@ -21,8 +22,12 @@ const dict: Record<string, string> = {
   "os.version": "OS version",
 };
 
-const TagGrid = ({ tags }) => {
-  const translate = (key: string, ...args) => (dict[key] ? dict[key] : key);
+interface Props {
+  tags: Tag[];
+}
+
+const TagGrid: React.FC<Props> = ({ tags }) => {
+  const translate = (key: string) => (dict[key] ? dict[key] : key);
 
   return (
     <Flex flexDirection="column">

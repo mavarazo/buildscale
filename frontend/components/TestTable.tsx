@@ -14,13 +14,14 @@ import {
 import React from "react";
 import prettyMilliseconds from "pretty-ms";
 import { useRouter } from "next/router";
+import { Test, TestStatus } from "@/lib/types";
 
-const dict: Record<string, string> = {};
+interface Props {
+  tests: Test[];
+}
 
-const Tasks = ({ tests }) => {
+const TestTable: React.FC<Props> = ({ tests }) => {
   const router = useRouter();
-
-  const translate = (key: string, ...args) => (dict[key] ? dict[key] : key);
 
   const durationInMillis = tests.reduce(
     (sum, current) => sum + current.durationInMillis,
@@ -62,25 +63,28 @@ const Tasks = ({ tests }) => {
                 <Td>{test.className}</Td>
                 <Td isNumeric>{test.durationInMillis}</Td>
                 <Td>
-                  {
-                    {
-                      SUCCESS: (
-                        <Badge colorScheme="green" borderRadius="5px">
-                          success
-                        </Badge>
-                      ),
-                      SKIPPED: (
-                        <Badge colorScheme="yellow" borderRadius="5px">
-                          skipped
-                        </Badge>
-                      ),
-                      FAILED: (
-                        <Badge colorScheme="red" borderRadius="5px">
-                          failed
-                        </Badge>
-                      ),
-                    }[test.status]
-                  }
+                  {(() => {
+                    switch (test.status) {
+                      case TestStatus.SKIPPED:
+                        return (
+                          <Badge colorScheme="yellow" borderRadius="5px">
+                            skipped
+                          </Badge>
+                        );
+                      case TestStatus.FAILED:
+                        return (
+                          <Badge colorScheme="red" borderRadius="5px">
+                            failed
+                          </Badge>
+                        );
+                      default:
+                        return (
+                          <Badge colorScheme="green" borderRadius="5px">
+                            success
+                          </Badge>
+                        );
+                    }
+                  })()}
                 </Td>
               </Tr>
             ))
@@ -95,4 +99,4 @@ const Tasks = ({ tests }) => {
   );
 };
 
-export default Tasks;
+export default TestTable;

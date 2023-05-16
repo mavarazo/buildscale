@@ -10,6 +10,7 @@ import {
 import { Bar } from "react-chartjs-2";
 import prettyMilliseconds from "pretty-ms";
 import { Box, Card, CardHeader, Heading } from "@chakra-ui/react";
+import { Task } from "@/lib/types";
 
 ChartJS.register(
   CategoryScale,
@@ -20,7 +21,11 @@ ChartJS.register(
   Legend
 );
 
-const Timeline = ({ tasks }) => {
+interface Props {
+  tasks: Task[];
+}
+
+const Timeline: React.FC<Props> = ({ tasks }) => {
   const firstTask = tasks.reduce((prev, current) =>
     prev.startTime < current.startTime ? prev : current
   );
@@ -31,11 +36,11 @@ const Timeline = ({ tasks }) => {
   const durationMap: Map<string, number> = new Map<string, number>();
   tasks.forEach((t) => durationMap.set(t.path, t.durationInMillis));
 
-  const footer = (items) => {
+  const footer = (items: any[]) => {
     let duration = 0;
 
     items.forEach((i) => {
-      duration = durationMap.get(i.label);
+      duration = durationMap.get(i.label) as number;
     });
     return "Duration: " + prettyMilliseconds(duration);
   };
@@ -44,7 +49,6 @@ const Timeline = ({ tasks }) => {
     indexAxis: "y" as const,
     interaction: {
       intersect: false,
-      mode: "index",
     },
     plugins: {
       legend: {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import useSWR, { mutate } from "swr";
 import { useRouter } from "next/router";
 import { format } from "date-fns";
-import { ReportList } from "@/lib/types";
+import { ReportList, Status } from "@/lib/types";
 import {
   Badge,
   Box,
@@ -31,18 +31,16 @@ export default function ReportsPage() {
   const router = useRouter();
   const { query } = router;
 
-  const fetcher = (...args) => fetch(...args).then((res) => res.json());
-
   const [pageIndex, setPageIndex] = useState(
-    query.page ? parseInt(query.page) : 0
+    query.page ? parseInt(query.page as string) : 0
   );
   const [pageSize, setPageSize] = useState(
-    query.size ? parseInt(query.size) : 25
+    query.size ? parseInt(query.size as string) : 25
   );
 
   const { data } = useSWR<ReportList>(
     `/api/reports?page=${pageIndex}&size=${pageSize}`,
-    fetcher
+    (url: string) => fetch(url).then((res) => res.json())
   );
   let totalElements = data ? data.totalElements : 0;
   let totalPages = data ? data.totalPages : 0;
@@ -86,9 +84,9 @@ export default function ReportsPage() {
           </Thead>
           <Tbody>
             {reports.length > 0 ? (
-              reports.map((report, index) => (
+              reports.map((report, itemIndex) => (
                 <Tr
-                  key={`tr-report-${index}`}
+                  key={`tr-report-${itemIndex}`}
                   className="cursor-pointer hover:bg-gray-100"
                   onClick={() => router.push(`/reports/${report.id}`)}
                 >
@@ -99,27 +97,28 @@ export default function ReportsPage() {
                   <Td>{report.hostname}</Td>
                   <Td>{report.durationInMillis}</Td>
                   <Td>
-                    {" "}
-                    {
-                      {
-                        SUCCESS: (
-                          <Badge colorScheme="green" borderRadius="5px">
-                            success
-                          </Badge>
-                        ),
-                        FAILED: (
-                          <Badge colorScheme="red" borderRadius="5px">
-                            failed
-                          </Badge>
-                        ),
-                      }[report.status]
-                    }
+                    {(() => {
+                      switch (report.status) {
+                        case Status.FAILED:
+                          return (
+                            <Badge colorScheme="red" borderRadius="5px">
+                              failed
+                            </Badge>
+                          );
+                        default:
+                          return (
+                            <Badge colorScheme="green" borderRadius="5px">
+                              success
+                            </Badge>
+                          );
+                      }
+                    })()}
                   </Td>
                 </Tr>
               ))
             ) : (
               <Tr>
-                <Td colSpan={4}>No data available</Td>
+                <Td colSpan={5}>No data available</Td>
               </Tr>
             )}
           </Tbody>

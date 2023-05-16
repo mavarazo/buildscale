@@ -14,8 +14,14 @@ import {
 } from "@chakra-ui/react";
 import React from "react";
 import prettyMilliseconds from "pretty-ms";
+import { Task, TaskStatus } from "@/lib/types";
 
-const TaskTable = ({ tasks, durationInMillis }) => {
+interface Props {
+  tasks: Task[];
+  durationInMillis: number;
+}
+
+const TaskTable: React.FC<Props> = ({ tasks, durationInMillis }) => {
   return (
     <Card mt={6}>
       <CardHeader>
@@ -49,33 +55,36 @@ const TaskTable = ({ tasks, durationInMillis }) => {
                 <Td>{format(task.endTime, "HH:mm:ss:SSSS")}</Td>
                 <Td isNumeric>{task.durationInMillis}</Td>
                 <Td>
-                  {
-                    {
-                      EXECUTED: (
-                        <Badge colorScheme="green" borderRadius="5px">
-                          executed
-                        </Badge>
-                      ),
-                      "UP-TO-DATE": (
-                        <Badge borderRadius="5px">up to date</Badge>
-                      ),
-                      "FROM-CACHE": (
-                        <Badge colorScheme="purple" borderRadius="5px">
-                          from cache
-                        </Badge>
-                      ),
-                      SKIPPED: (
-                        <Badge colorScheme="yellow" borderRadius="5px">
-                          skipped
-                        </Badge>
-                      ),
-                      FAILED: (
-                        <Badge colorScheme="red" borderRadius="5px">
-                          failed
-                        </Badge>
-                      ),
-                    }[task.status]
-                  }
+                  {(() => {
+                    switch (task.status) {
+                      case TaskStatus.UP_TO_DATE:
+                        return <Badge borderRadius="5px">up to date</Badge>;
+                      case TaskStatus.FROM_CACHE:
+                        return (
+                          <Badge colorScheme="purple" borderRadius="5px">
+                            from cache
+                          </Badge>
+                        );
+                      case TaskStatus.SKIPPED:
+                        return (
+                          <Badge colorScheme="yellow" borderRadius="5px">
+                            skipped
+                          </Badge>
+                        );
+                      case TaskStatus.FAILED:
+                        return (
+                          <Badge colorScheme="red" borderRadius="5px">
+                            failed
+                          </Badge>
+                        );
+                      default:
+                        return (
+                          <Badge colorScheme="green" borderRadius="5px">
+                            executed
+                          </Badge>
+                        );
+                    }
+                  })()}
                 </Td>
               </Tr>
             ))

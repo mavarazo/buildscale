@@ -17,8 +17,8 @@ export interface Report {
 }
 
 export enum Status {
-  SUCCESS,
-  FAILED,
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
 }
 
 export interface Tag {
@@ -37,14 +37,15 @@ export interface Task {
 }
 
 export enum TaskStatus {
-  EXECUTED,
-  "UP-TO-DATE",
-  "FROM-CACHE",
-  SKIPPED,
-  FAILED,
+  EXECUTED = "EXECUTED",
+  UP_TO_DATE = "UP-TO-DATE",
+  FROM_CACHE = "FROM-CACHE",
+  SKIPPED = "SKIPPED",
+  FAILED = "FAILED",
 }
 
 export interface Test {
+  id: string;
   name: string;
   className: string;
   durationInMillis: number;
@@ -53,9 +54,9 @@ export interface Test {
 }
 
 export enum TestStatus {
-  SUCCESS,
-  FAILED,
-  SKIPPED,
+  SUCCESS = "SUCCESS",
+  FAILED = "FAILED",
+  SKIPPED = "SKIPPED",
 }
 
 export interface TestFailure {
