@@ -17,7 +17,7 @@ export default function TestPage() {
   const id = query.id;
 
   const { data, error } = useSWR<Test>(
-    id ? `/api/tests/${id}` : null,
+    id ? `/api/v1/tests/${id}` : null,
     (url: string) => fetch(url).then((res) => res.json())
   );
 

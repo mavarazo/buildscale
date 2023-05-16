@@ -10,6 +10,7 @@ services:
     - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/buildscale
     - SPRING_DATASOURCE_USERNAME=buildscale
     - SPRING_DATASOURCE_PASSWORD=password
+    - BUILDSCALE_BASEURL=http://frontend:3000
     depends_on:
     - db
 
@@ -24,6 +25,22 @@ services:
     - 15432:5432
     volumes:
     - db-data:/var/lib/postgresql/data
+
+  frontend:
+    build: 
+      context: frontend
+    restart: always
+    ports:
+    - 15430:3000
+    depends_on:
+    - backend
+  
+  nginx:
+    build:
+      context: nginx
+    restart: always
+    ports:
+    - 80:80
 
 volumes:
   db-data:

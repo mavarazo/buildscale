@@ -39,7 +39,7 @@ export default function ReportsPage() {
   );
 
   const { data } = useSWR<ReportList>(
-    `/api/reports?page=${pageIndex}&size=${pageSize}`,
+    `/api/v1/reports?page=${pageIndex}&size=${pageSize}`,
     (url: string) => fetch(url).then((res) => res.json())
   );
   let totalElements = data ? data.totalElements : 0;
@@ -47,7 +47,7 @@ export default function ReportsPage() {
   let reports = data ? data.elements : [];
 
   const handleRefresh = () => {
-    mutate(`/api/reports?page=${pageIndex}&size=${pageSize}`);
+    mutate(`/api/v1/reports?page=${pageIndex}&size=${pageSize}`);
   };
 
   const handlePageChange = (page: number) => {

@@ -1,15 +1,18 @@
-FROM node:20-alpine
+FROM node:lts-alpine
+
+RUN npm install --global pm2
 
 WORKDIR /app
 
-ENV PATH /app/node_modules/.bin:$PATH
-
-COPY package.json .
-COPY package-lock.json .
-RUN npm install # -g npm@8.9.0
+COPY ./package*.json ./
+RUN npm install --omit=dev
 
 COPY . .
 
+RUN npm run build
+
 EXPOSE 3000
 
-CMD ["npm", "start"]
+USER node
+
+CMD [ "pm2-runtime", "npm", "--", "start" ]

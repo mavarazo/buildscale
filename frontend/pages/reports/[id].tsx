@@ -14,7 +14,7 @@ export default function ReportPage() {
   const id = query.id;
 
   const { data, error } = useSWR<Report>(
-    id ? `/api/reports/${id}` : null,
+    id ? `/api/v1/reports/${id}` : null,
     (url: string) => fetch(url).then((res) => res.json())
   );
 
