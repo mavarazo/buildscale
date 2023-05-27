@@ -12,12 +12,13 @@
             <column name="CREATED" type="TIMESTAMP(6)">
                 <constraints nullable="false"/>
             </column>
-            <column name="HOSTNAME" type="VARCHAR2(255)">
-                <constraints nullable="false"/>
-            </column>
             <column name="PROJECT" type="VARCHAR2(255)">
                 <constraints nullable="false"/>
             </column>
+            <column name="HOSTNAME" type="VARCHAR2(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="TASK_EXEC_REQ" type="VARCHAR2(500)"/>
             <column name="DURATION" type="BIGINT" remarks="in millis">
                 <constraints nullable="false"/>
             </column>

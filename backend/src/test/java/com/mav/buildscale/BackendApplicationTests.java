@@ -1,11 +1,6 @@
 package com.mav.buildscale;
 
-import com.mav.buildscale.api.model.ReportDto;
-import com.mav.buildscale.api.model.ReportListDto;
-import com.mav.buildscale.api.model.TagDto;
-import com.mav.buildscale.api.model.TaskDto;
-import com.mav.buildscale.api.model.TestDto;
-import com.mav.buildscale.api.model.TestFailureDto;
+import com.mav.buildscale.api.model.*;
 import com.mav.buildscale.repository.ReportRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;
@@ -71,6 +66,7 @@ class BackendApplicationTests {
             final ReportDto reportDto = new ReportDto()
                     .project("buildscale-sample")
                     .hostname("localhost")
+                    .taskExecutionRequest("clean build")
                     .durationInMillis(300.0)
                     .status(ReportDto.StatusEnum.FAILED)
                     .addTagsItem(new TagDto().key("gradle.version").value("8.0.2"))

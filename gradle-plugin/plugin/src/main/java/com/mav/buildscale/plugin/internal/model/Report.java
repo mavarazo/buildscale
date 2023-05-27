@@ -20,6 +20,7 @@ public class Report implements Serializable {
 
     private String project;
     private String hostname;
+    private String taskExecutionRequest;
     private long durationInMillis;
 
     @Builder.Default

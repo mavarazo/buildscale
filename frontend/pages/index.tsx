@@ -78,6 +78,7 @@ export default function ReportsPage() {
               <Th>Build time</Th>
               <Th>Project</Th>
               <Th>Hostname</Th>
+              <Th>Requested tasks</Th>
               <Th>Duration</Th>
               <Th>Status</Th>
             </Tr>
@@ -95,6 +96,7 @@ export default function ReportsPage() {
                   </Td>
                   <Td>{report.project}</Td>
                   <Td>{report.hostname}</Td>
+                  <Td>{report.taskExecutionRequest}</Td>
                   <Td>{report.durationInMillis}</Td>
                   <Td>
                     {(() => {

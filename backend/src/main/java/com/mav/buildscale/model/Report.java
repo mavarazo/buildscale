@@ -1,13 +1,6 @@
 package com.mav.buildscale.model;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
@@ -33,6 +26,9 @@ public class Report extends AbstractEntity {
 
     @Column(name = "HOSTNAME")
     private String hostname;
+    
+    @Column(name = "TASK_EXEC_REQ")
+    private String taskExecutionRequest;
 
     @Column(name = "DURATION")
     private Long durationInMillis;
@@ -40,6 +36,7 @@ public class Report extends AbstractEntity {
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
     private Status status = Status.SUCCESS;
+
 
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Tag> tags = new ArrayList<>();

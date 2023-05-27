@@ -38,6 +38,7 @@ export default function ReportPage() {
               {format(new Date(data.created), "dd.MM.yyyy HH:mm:ss")}
             </Text>
           </Heading>
+          <Heading size="sm">$ {data.taskExecutionRequest}</Heading>
         </CardHeader>
         <TagGrid tags={data.tags} />
       </Card>

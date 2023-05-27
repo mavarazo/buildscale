@@ -9,6 +9,7 @@ export interface Report {
   created: string;
   project: string;
   hostname: string;
+  taskExecutionRequest: string;
   durationInMillis: number;
   status: Status;
   tags: Tag[];
