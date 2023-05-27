@@ -48,7 +48,7 @@ public class ReportController implements ReportsApi {
         final Report report = reportRepository.save(reportMapper.mapReportDtoToReportDo(reportDto));
 
         final URI uri = ServletUriComponentsBuilder.fromHttpUrl(baseUrl)
-                .path("/r/{reportId}")
+                .path("/reports/{reportId}")
                 .buildAndExpand(report.getOid())
                 .toUri();
         return ResponseEntity.created(uri).build();
