@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.mav.buildscale"
-version = "0.0.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
@@ -29,8 +29,9 @@ gradlePlugin {
     val buildscale by plugins.creating {
         id = "com.mav.buildscale"
         implementationClass = "com.mav.buildscale.plugin.BuildscalePlugin"
-        displayName = "Gradle plugin to collect info about build"
-        description = "Collects info about finished tasks, system and publish everything."
+        displayName = "Gradle plugin to collect data about builds"
+        description = "Collects data about the system, finished tasks and tests and publish them to the Buildscale server."
+        tags.addAll("build")
     }
 }
 
